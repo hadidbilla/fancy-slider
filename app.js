@@ -21,14 +21,28 @@ const showImages = (images) => {
   images.forEach((image) => {
     let div = document.createElement("div");
     div.className = "col-lg-3 col-md-4 col-xs-6 img-item mb-2";
-    div.innerHTML = ` <img class="img-fluid img-thumbnail" onclick=selectItem(event,"${image.webformatURL}") src="${image.webformatURL}" alt="${image.tags}">`;
+    div.innerHTML = `
+     <img class="img-fluid img-thumbnail" onclick=selectItem(event,"${image.webformatURL}") src="${image.webformatURL}" alt="${image.tags}">
+     <div class="d-flex justify-content-around" style="color: #4C3AE3;">
+        <div>
+          <p>like: ${image.likes}</p>
+        </div>
+        <div>
+          <p>View: ${image.views}</p>
+        </div>
+        <div>
+          <p>love: ${image.favorites}</p>
+        </div>
+   </div>
+     `;
     gallery.appendChild(div);
   });
+  toggleSpinner(false);
 };
 
 const getImages = () => {
   const query = document.getElementById("search").value;
-  console.log(query);
+  toggleSpinner(true);
   fetch(
     `https://pixabay.com/api/?key=${KEY}=${query}&image_type=photo&pretty=true`
   )
@@ -45,7 +59,9 @@ const selectItem = (event, img) => {
   let item = sliders.indexOf(img);
   if (item === -1) {
     sliders.push(img);
-  } else if (item >= 0) {
+  }
+  //handel the image click second time
+  else if (item >= 0) {
     sliders.splice(item, 1);
   }
 };
@@ -102,7 +118,6 @@ const changeSlide = (index) => {
     slideIndex = items.length - 1;
     index = slideIndex;
   }
-
   if (index >= items.length) {
     index = 0;
     slideIndex = 0;
@@ -126,6 +141,7 @@ searchBtn.addEventListener("click", function () {
 sliderBtn.addEventListener("click", function () {
   createSlider();
 });
+// handel keyboard enter button
 document
   .getElementById("search")
   .addEventListener("keypress", function (event) {
@@ -133,3 +149,13 @@ document
       searchBtn.click();
     }
   });
+//add spinner
+const toggleSpinner = (show) => {
+  const spinner = document.getElementById("loading-spinner");
+  console.log(spinner.classList);
+  if (show) {
+    spinner.classList.remove("d-none");
+  } else {
+    spinner.classList.add("d-none");
+  }
+};
